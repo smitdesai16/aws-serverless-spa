@@ -12,14 +12,56 @@ functions:
 
 resources:
   Resources:
-    Website:
+    StaticSite:
       Type: AWS::S3::Bucket
       Properties:
+        AccessControl: PublicRead
         WebsiteConfiguration:
           ErrorDocument: index.html
           IndexDocument: index.html
+
+    StaticSiteS3BucketPolicy:
+      Type: AWS::S3::BucketPolicy
+      Properties:
+        Bucket:
+          Ref: StaticSite
+        PolicyDocument:
+          Statement:
+            - Sid: PublicReadGetObject
+              Effect: Allow
+              Principal: "*"
+              Action:
+              - s3:GetObject
+              Resource:
+                Fn::Join: [
+                  "", [
+                    "arn:aws:s3:::",
+                    {
+                      "Ref": "StaticSite"
+                    },
+                    "/*"
+                  ]
+                ]
+
   Outputs:
-    WebSiteUrl:
-      Value: {"Fn::GetAtt": [Website, WebsiteURL]}
-    WebSiteBucket:
-      Value: {Ref: Website}
+    StaticSiteS3BucketName:
+      Value:
+        'Ref': StaticSite
+    StaticSiteS3BucketDomainName:
+      Value:
+        Fn::GetAtt:
+          - StaticSite
+          - DomainName
+    StaticSiteS3BucketWebsiteURL:
+      Value:
+        Fn::GetAtt:
+          - StaticSite
+          - WebsiteURL
+
+plugins:
+  - serverless-sync-s3buckets
+
+custom:
+  syncS3Buckets:
+    - bucketRef: StaticSite
+      localDir: dist
