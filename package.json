@@ -16,6 +16,7 @@
   },
   "devDependencies": {
     "@nuxt/typescript-build": "^0.6.0",
+    "serverless-s3-remover": "^0.6.0",
     "serverless-sync-s3buckets": "^1.0.1"
   }
 }

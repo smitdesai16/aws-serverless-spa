@@ -16,6 +16,7 @@ resources:
       Type: AWS::S3::Bucket
       Properties:
         AccessControl: PublicRead
+        BucketName: ${self:custom.hostedZoneName}
         WebsiteConfiguration:
           ErrorDocument: index.html
           IndexDocument: index.html
@@ -60,8 +61,14 @@ resources:
 
 plugins:
   - serverless-sync-s3buckets
+  - serverless-s3-remover
 
 custom:
   syncS3Buckets:
     - bucketRef: StaticSite
       localDir: dist
+  hostedZoneName: www.mumbaimob.com
+  remover:
+    buckets:
+      - ${self:custom.hostedZoneName}
+      
